@@ -1,3 +1,3 @@
 module github.com/RyanConnell/concertwatch
 
-go 1.18
+go 1.20
