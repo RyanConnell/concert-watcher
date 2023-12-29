@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
+	"sort"
 
+	"github.com/RyanConnell/concertwatch/internal/watcher"
 	"github.com/RyanConnell/concertwatch/pkg/ticketmaster"
 )
 
@@ -25,38 +26,22 @@ func main() {
 		log.Fatalf("Error reading file: %v", err)
 		return
 	}
-	artistSet := make(map[string]struct{})
-	for _, artist := range artists {
-		artistSet[strings.ToLower(artist)] = struct{}{}
-	}
 
-	// Search for events
-	searchCriteria := map[string]string{
-		"size":               "200", // Limit response size to 200 events. (max supported by API)
-		"countryCode":        "IE",  // Filter results to Ireland
-		"classificationName": "music",
-	}
 	reader := ticketmaster.NewReader(flags.apiKey)
-	events, err := reader.GetEvents(searchCriteria)
+	watcher := watcher.NewWatcher(reader, artists)
+	events, err := watcher.FindEvents()
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		log.Fatalf("Error retrieving events: %v", err)
 		return
 	}
 
-	// Filter events based on our artist list.
-	fmt.Printf("Found %d events\n", len(events))
+	// Sort our events by date
+	sort.Slice(events, func(i, j int) bool {
+		return events[i].Date() < events[j].Date()
+	})
+	fmt.Printf("Found %d matching events\n", len(events))
 	for _, event := range events {
-		for _, attr := range event.Embedded.Attractions {
-			if _, ok := artistSet[strings.ToLower(attr.Name)]; !ok {
-				continue
-			}
-
-			fmt.Printf("%v: %s are playing ", event.Date(), attr.Name)
-			if len(event.Embedded.Attractions) != 1 {
-				fmt.Printf("with %v ", event.Embedded.Attractions)
-			}
-			fmt.Printf("at %v\n", event.Embedded.Venues)
-		}
+		fmt.Printf("- %s\n", event.String())
 	}
 }
 

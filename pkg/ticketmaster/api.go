@@ -12,8 +12,11 @@ const (
 )
 
 type API interface {
-	GetEvents() ([]*Event, error)
+	GetEvents(map[string]string) ([]*Event, error)
 }
+
+// Ensure that our Reader implements the API interface.
+var _ API = (*Reader)(nil)
 
 type Link struct {
 	URL string `json:"href"`
