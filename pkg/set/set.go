@@ -4,7 +4,7 @@ type Set[T comparable] struct {
 	values map[T]struct{}
 }
 
-func NewSet[T comparable](data ...T) *Set[T] {
+func New[T comparable](data ...T) *Set[T] {
 	values := make(map[T]struct{}, len(data))
 	for _, d := range data {
 		values[d] = struct{}{}
@@ -22,4 +22,9 @@ func (s *Set[T]) Values() []T {
 		values = append(values, v)
 	}
 	return values
+}
+
+func (s *Set[T]) Contains(value T) bool {
+	_, ok := s.values[value]
+	return ok
 }
