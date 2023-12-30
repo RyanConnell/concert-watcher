@@ -16,6 +16,7 @@ type Venue struct {
 type Date struct {
 	LocalDate string `json:"localDate"`
 	LocalTime string `json:"localTime"`
+	DateTime  string `json:"dateTime"`
 }
 
 type Event struct {
