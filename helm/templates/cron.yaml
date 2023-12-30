@@ -12,15 +12,9 @@ spec:
           - name: concert-watch
             image: {{ .Values.image }}
             command:
-            - /bin/concert-watch
-            - -apiKey
-            - "${TICKETMASTER_API_KEY}"
-            - -artistsFile
-            - "/config/artists"
-            - -discordWebhookURL
-            - "${DISCORD_WEBHOOK_URL}"
-            - -ticketmasterConfig
-            - "/config/ticketmaster.yaml"
+            - /bin/sh
+            - -c
+            - /bin/concert-watch -apiKey $TICKETMASTER_API_KEY -artistFile /config/artists -discordWebhookURL $DISCORD_WEBHOOK_URL -ticketmasterConfig /config/ticketmaster.yaml
             env:
             - name: "TICKETMASTER_API_KEY"
               value: "{{ .Values.ticketmaster.apiKey }}"
