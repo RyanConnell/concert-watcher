@@ -1,11 +1,11 @@
 name: concert-watch
+image: concert-watch:latest
 
-image: concert-watch:369b469
-
-cronSchedule: "* * * * *"
+cronSchedule: "@weekly"
 
 discord:
-  webhookURL: "foo"
+  # Add a webhook URL to enable discord notifications.
+  webhookURL: ""
 
 ticketmaster:
-  apiKey: "bar"
+  apiKey: "{TICKETMASTER_API_KEY_GOES_HERE}"
