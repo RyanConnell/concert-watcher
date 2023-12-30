@@ -6,7 +6,7 @@ jobs:
   build:    
     runs-on: ubuntu-latest
     env:      
-      DOCKER_REGISTRY: hub.docker.io
+      DOCKER_REGISTRY: hub.docker.com
       DOCKER_IMAGE: RyanConnell/concert-watch
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
