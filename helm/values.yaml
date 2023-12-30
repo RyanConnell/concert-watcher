@@ -1,5 +1,5 @@
 name: concert-watch
-image: concert-watch:latest
+image: ryanconnell/concert-watch:latest
 
 cronSchedule: "@weekly"
 
