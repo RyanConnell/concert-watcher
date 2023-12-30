@@ -13,23 +13,24 @@ import (
 )
 
 type flags struct {
-	apiKey            string
-	artistFile        string
-	discordWebhookURL string
+	apiKey                 string
+	artistFile             string
+	ticketmasterConfigFile string
+	discordWebhookURL      string
 }
 
 func main() {
-	flags := parseFlags()
+	f := parseFlags()
 
 	// Read artists
-	artists, err := readLines(flags.artistFile)
+	artists, err := readLines(f.artistFile)
 	if err != nil {
 		log.Fatalf("Error reading file: %v", err)
 		return
 	}
 
-	reader := ticketmaster.NewReader(flags.apiKey)
-	watcher := watcher.NewWatcher(reader, artists, flags.discordWebhookURL)
+	reader := ticketmaster.NewReader(f.apiKey)
+	watcher := watcher.NewWatcher(reader, f.ticketmasterConfigFile, artists, f.discordWebhookURL)
 
 	events, err := watcher.FindEvents()
 	if err != nil {
@@ -58,6 +59,8 @@ func parseFlags() *flags {
 	flag.StringVar(&f.artistFile, "artistFile", "artists", "Path to a file containing a list of "+
 		"artists to search for")
 	flag.StringVar(&f.discordWebhookURL, "discordWebhookURL", "", "Discord webhook URL")
+	flag.StringVar(&f.ticketmasterConfigFile, "ticketmasterConfig", "ticketmaster.yaml",
+		"Path to a file containing search criteria for ticketmaster event lookups")
 	flag.Parse()
 	return f
 }

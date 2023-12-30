@@ -1,0 +1,14 @@
+# This file contains a list of search criteria to help narrow down the 'GET /events' request.
+#
+# Any of the query parameters supported by 'GET /events' can be added to this file. See
+# https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/#search-events-v2
+# for a list of the support parameters. (Note: not all data types are supported yet.
+
+# Maximum size allowed by ticketmaster API.
+size: 200
+
+# Filter results to Ireland.
+countryCode: IE
+
+# Filter results to concerts.
+classificationName: music

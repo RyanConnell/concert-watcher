@@ -10,25 +10,26 @@ import (
 )
 
 type Watcher struct {
-	ticketmasterAPI   ticketmaster.API
-	trackedArtists    *set.Set[string]
-	discordWebhookURL string
+	ticketmasterAPI        ticketmaster.API
+	ticketmasterConfigFile string
+	trackedArtists         *set.Set[string]
+	discordWebhookURL      string
 }
 
-func NewWatcher(ticketmasterAPI ticketmaster.API, trackedArtists []string,
-	discordWebhookURL string) *Watcher {
+func NewWatcher(ticketmasterAPI ticketmaster.API, ticketmasterConfigFile string,
+	trackedArtists []string, discordWebhookURL string) *Watcher {
 	return &Watcher{
-		ticketmasterAPI:   ticketmasterAPI,
-		trackedArtists:    set.New(trackedArtists...),
-		discordWebhookURL: discordWebhookURL,
+		ticketmasterAPI:        ticketmasterAPI,
+		ticketmasterConfigFile: ticketmasterConfigFile,
+		trackedArtists:         set.New(trackedArtists...),
+		discordWebhookURL:      discordWebhookURL,
 	}
 }
 
 func (w *Watcher) FindEvents() ([]*ticketmaster.Event, error) {
-	searchCriteria := map[string]string{
-		"size":               "200",   // Maximum size allowed by ticketmaster API.
-		"countryCode":        "IE",    // Filter results to Ireland.
-		"classificationName": "music", // Filter results to concerts.
+	searchCriteria, err := NewSearchCriteria(w.ticketmasterConfigFile)
+	if err != nil {
+		return nil, err
 	}
 	events, err := w.ticketmasterAPI.GetEvents(searchCriteria)
 	if err != nil {
