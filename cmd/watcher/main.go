@@ -13,8 +13,9 @@ import (
 )
 
 type flags struct {
-	apiKey     string
-	artistFile string
+	apiKey            string
+	artistFile        string
+	discordWebhookURL string
 }
 
 func main() {
@@ -28,7 +29,8 @@ func main() {
 	}
 
 	reader := ticketmaster.NewReader(flags.apiKey)
-	watcher := watcher.NewWatcher(reader, artists)
+	watcher := watcher.NewWatcher(reader, artists, flags.discordWebhookURL)
+
 	events, err := watcher.FindEvents()
 	if err != nil {
 		log.Fatalf("Error retrieving events: %v", err)
@@ -43,6 +45,11 @@ func main() {
 	for _, event := range events {
 		fmt.Printf("- %s\n", event.String())
 	}
+
+	if err := watcher.Notify(events); err != nil {
+		log.Fatalf("Error notifying discord: %v", err)
+		return
+	}
 }
 
 func parseFlags() *flags {
@@ -50,6 +57,7 @@ func parseFlags() *flags {
 	flag.StringVar(&f.apiKey, "apiKey", "", "Ticketmaster API Key")
 	flag.StringVar(&f.artistFile, "artistFile", "artists", "Path to a file containing a list of "+
 		"artists to search for")
+	flag.StringVar(&f.discordWebhookURL, "discordWebhookURL", "", "Discord webhook URL")
 	flag.Parse()
 	return f
 }
