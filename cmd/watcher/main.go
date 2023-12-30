@@ -22,6 +22,13 @@ type flags struct {
 func main() {
 	f := parseFlags()
 
+	// Ticketmaster will give us an authentication error if we don't have an API key.
+	if f.apiKey == "" {
+		log.Fatalf("Unable to run without a Ticketmaster API key. " +
+			"Please pass one via the --apiKey option")
+		return
+	}
+
 	// Read artists
 	artists, err := readLines(f.artistFile)
 	if err != nil {
@@ -31,7 +38,6 @@ func main() {
 
 	reader := ticketmaster.NewReader(f.apiKey)
 	watcher := watcher.NewWatcher(reader, f.ticketmasterConfigFile, artists, f.discordWebhookURL)
-
 	events, err := watcher.FindEvents()
 	if err != nil {
 		log.Fatalf("Error retrieving events: %v", err)
