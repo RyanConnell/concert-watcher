@@ -5,5 +5,5 @@ RUN CGO_ENABLED=0 go build -o /bin/concert-watch cmd/watcher/main.go
 
 FROM alpine
 COPY --from=build /bin/concert-watch /bin/concert-watch
-COPY --from=build /app/artists /artists
+COPY --from=build /app/helm/files/* /
 CMD [ "/bin/concert-watch" ]

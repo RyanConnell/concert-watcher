@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}
+spec:
+  schedule: "{{ .Values.cronSchedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: concert-watch
+            image: {{ .Values.image }}
+            command:
+            - /bin/concert-watch
+            - -apiKey
+            - "${TICKETMASTER_API_KEY}"
+            - -artistsFile
+            - "/config/artists"
+            - -discordWebhookURL
+            - "${DISCORD_WEBHOOK_URL}"
+            - -ticketmasterConfig
+            - "/config/ticketmaster.yaml"
+            env:
+            - name: "TICKETMASTER_API_KEY"
+              value: "{{ .Values.ticketmaster.apiKey }}"
+            - name: "DISCORD_WEBHOOK_URL"
+              value: "{{ .Values.discord.webhookURL }}"
+            volumeMounts:
+            - name: config-map
+              mountPath: /config
+          volumes:
+          - name: config-map
+            configMap:
+              name: {{ .Values.name }}-config
+          restartPolicy: Never

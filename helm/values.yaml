@@ -1,0 +1,11 @@
+name: concert-watch
+
+image: concert-watch:369b469
+
+cronSchedule: "* * * * *"
+
+discord:
+  webhookURL: "foo"
+
+ticketmaster:
+  apiKey: "bar"
