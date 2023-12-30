@@ -5,8 +5,7 @@ on:
 jobs:   
   build:    
     runs-on: ubuntu-latest
-    env:      
-      DOCKER_REGISTRY: hub.docker.com
+    env:
       DOCKER_IMAGE: RyanConnell/concert-watch
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -14,7 +13,7 @@ jobs:
       
     steps:
     - name: Checkout the code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
       
     - name: Set up Docker Buildx
       uses: crazy-max/ghaction-docker-buildx@v1
@@ -26,14 +25,15 @@ jobs:
       id: prepare
       run: |
         echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}
-        echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}
+        echo ::set-output name=docker_image::${DOCKER_IMAGE}
         echo ::set-output name=version::${GITHUB_RUN_NUMBER}
-        
+
     - name: Docker Login
-      if: success()
-      run: |
-        echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin
-        
+      uses: docker/login-action@3d58c274f17dffee475a5520cbe67f0a882c4dbb
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+      
     - name: Run Buildx (push image)
       if: success()
       run: |
