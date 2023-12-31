@@ -9,3 +9,7 @@ discord:
 
 ticketmaster:
   apiKey: "{TICKETMASTER_API_KEY_GOES_HERE}"
+
+storage:
+  className: nfs-client
+  size: 64Mi
