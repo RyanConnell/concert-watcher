@@ -1,8 +1,8 @@
 Concert-Watcher
 ===
 <a href="https://hub.docker.com/repository/docker/ryanconnell/concert-watcher/tags?page=1&ordering=last_updated">![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ryanconnell/concert-watcher?style=flat&label=Docker)</a>
-![Docker Image Size with architecture (latest by date/latest semver)](https://img.shields.io/docker/image-size/ryanconnell/concert-watcher)
-![Docker Pulls](https://img.shields.io/docker/pulls/ryanconnell/concert-watcher)
+<a href="https://hub.docker.com/repository/docker/ryanconnell/concert-watcher/tags?page=1&ordering=last_updated">![Docker Image Size with architecture (latest by date/latest semver)](https://img.shields.io/docker/image-size/ryanconnell/concert-watcher)</a>
+<a href="https://hub.docker.com/repository/docker/ryanconnell/concert-watcher/tags?page=1&ordering=last_updated">![Docker Pulls](https://img.shields.io/docker/pulls/ryanconnell/concert-watcher)</a>
 
 Searching through the ticketmaster website manually is an absolute pain. Instead of that this script will query the ticketmaster API for a list of nearby concerts and then compare the artists with a list of artists _you_ want to be notified about.
 
