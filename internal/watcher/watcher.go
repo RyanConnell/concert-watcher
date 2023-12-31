@@ -65,6 +65,7 @@ func (w *Watcher) FindEvents(diffMode bool) ([]*ticketmaster.Event, error) {
 			if w.trackedArtists.Contains(artist.Name) {
 				matchingEvents = append(matchingEvents, event)
 				matchingEventIDs = append(matchingEventIDs, event.ID)
+				break
 			}
 		}
 	}
