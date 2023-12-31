@@ -46,6 +46,8 @@ Check out https://developer.ticketmaster.com/products-and-docs/apis/discovery-ap
 ### 4. (Optional) Discord Notifications
 The current notification mechanism is via Discord Webhooks. Check out the official discord support page for information on how to create a webhook for your discord server: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
 
+By default we will send a notification / print out the list of matching events every time the application runs. If you would instead only like to be notified when something _new_ pops up you can make use of the `--diff` flag to keep track of which events we've already been notified of and avoid sending out duplicate notifications across runs.
+
 ## Running the application
 
 ### Docker

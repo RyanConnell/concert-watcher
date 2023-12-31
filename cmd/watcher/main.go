@@ -17,6 +17,7 @@ type flags struct {
 	artistFile             string
 	ticketmasterConfigFile string
 	discordWebhookURL      string
+	diffMode               bool
 }
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 
 	reader := ticketmaster.NewReader(f.apiKey)
 	watcher := watcher.NewWatcher(reader, f.ticketmasterConfigFile, artists, f.discordWebhookURL)
-	events, err := watcher.FindEvents()
+	events, err := watcher.FindEvents(f.diffMode)
 	if err != nil {
 		log.Fatalf("Error retrieving events: %v", err)
 		return
@@ -67,6 +68,9 @@ func parseFlags() *flags {
 	flag.StringVar(&f.discordWebhookURL, "discordWebhookURL", "", "Discord webhook URL")
 	flag.StringVar(&f.ticketmasterConfigFile, "ticketmasterConfig", "ticketmaster.yaml",
 		"Path to a file containing search criteria for ticketmaster event lookups")
+	flag.BoolVar(&f.diffMode, "diff", false, fmt.Sprintf("Run in diff mode which only notifies "+
+		"for events we haven't already seen. Notification history is stored in the %q file "+
+		"between runs", watcher.DIFF_FILE))
 	flag.Parse()
 	return f
 }

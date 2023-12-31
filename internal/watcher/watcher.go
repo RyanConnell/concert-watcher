@@ -1,13 +1,19 @@
 package watcher
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"io/fs"
+	"os"
 	"strings"
 
 	"github.com/RyanConnell/concert-watcher/pkg/discord"
 	"github.com/RyanConnell/concert-watcher/pkg/set"
 	"github.com/RyanConnell/concert-watcher/pkg/ticketmaster"
 )
+
+const DIFF_FILE = "previous-event-ids"
 
 type Watcher struct {
 	ticketmasterAPI        ticketmaster.API
@@ -26,7 +32,7 @@ func NewWatcher(ticketmasterAPI ticketmaster.API, ticketmasterConfigFile string,
 	}
 }
 
-func (w *Watcher) FindEvents() ([]*ticketmaster.Event, error) {
+func (w *Watcher) FindEvents(diffMode bool) ([]*ticketmaster.Event, error) {
 	searchCriteria, err := NewSearchCriteria(w.ticketmasterConfigFile)
 	if err != nil {
 		return nil, err
@@ -36,22 +42,47 @@ func (w *Watcher) FindEvents() ([]*ticketmaster.Event, error) {
 		return nil, err
 	}
 
+	seen := set.New[string]()
+	if diffMode {
+		previousIDs, err := w.previousEventIDs()
+		if err != nil {
+			return nil, err
+		}
+		seen.Add(previousIDs...)
+	}
+
 	// Filter events based on our artist list.
 	var matchingEvents []*ticketmaster.Event
+	var matchingEventIDs []string
 	for _, event := range events {
+		if seen.Contains(event.ID) {
+			// Keep track of which events are showing up again so that our 'seen' file will be
+			// pruned automatically.
+			matchingEventIDs = append(matchingEventIDs, event.ID)
+			continue
+		}
 		for _, artist := range event.Embedded.Attractions {
 			if w.trackedArtists.Contains(artist.Name) {
 				matchingEvents = append(matchingEvents, event)
+				matchingEventIDs = append(matchingEventIDs, event.ID)
 			}
 		}
 	}
 
+	if diffMode {
+		if err := w.saveEventIDs(matchingEventIDs); err != nil {
+			return nil, err
+		}
+	}
 	return matchingEvents, nil
 }
 
 func (w *Watcher) Notify(events []*ticketmaster.Event) error {
 	if w.discordWebhookURL == "" {
 		fmt.Println("No discord webhook URL was provided; Skipping POST to discord")
+		return nil
+	}
+	if len(events) == 0 {
 		return nil
 	}
 
@@ -91,4 +122,35 @@ func (w *Watcher) Notify(events []*ticketmaster.Event) error {
 
 	webhook := &discord.Webhook{URL: w.discordWebhookURL, Body: webhookBody}
 	return webhook.Send()
+}
+
+// Query for a list of events that we've previously notiied on.
+func (w *Watcher) previousEventIDs() ([]string, error) {
+	file, err := os.Open(DIFF_FILE)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var ids []string
+	for scanner.Scan() {
+		ids = append(ids, scanner.Text())
+	}
+	return ids, nil
+}
+
+// Save seen event IDs so that we don't send duplicate notifications each time we run.
+func (w *Watcher) saveEventIDs(ids []string) error {
+	file, err := os.Create(DIFF_FILE)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	file.WriteString(strings.Join(ids, "\n") + "\n")
+	return nil
 }

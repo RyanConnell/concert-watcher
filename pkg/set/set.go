@@ -12,8 +12,10 @@ func New[T comparable](data ...T) *Set[T] {
 	return &Set[T]{values: values}
 }
 
-func (s *Set[T]) Add(value T) {
-	s.values[value] = struct{}{}
+func (s *Set[T]) Add(values ...T) {
+	for _, value := range values {
+		s.values[value] = struct{}{}
+	}
 }
 
 func (s *Set[T]) Values() []T {
