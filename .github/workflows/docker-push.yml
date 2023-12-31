@@ -39,6 +39,7 @@ jobs:
       run: |
         docker buildx build \
         --platform ${{ steps.prepare.outputs.docker_platform }} \
+        --platform linux/amd64 \
         --tag ${{ steps.prepare.outputs.docker_image }}:$(git rev-parse --short "$GITHUB_SHA") \
         --tag ${{ steps.prepare.outputs.docker_image }}:latest \
         --file ./Dockerfile \
