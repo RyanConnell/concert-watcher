@@ -14,7 +14,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - /bin/concert-watcher -apiKey $TICKETMASTER_API_KEY -artistFile /config/artists -discordWebhookURL $DISCORD_WEBHOOK_URL -ticketmasterConfig /config/ticketmaster.yaml --diff --diffFile /data/previous-ids
+            - /bin/concert-watcher scan --api-key $TICKETMASTER_API_KEY --artist-file /config/artists --discord-webhook-url $DISCORD_WEBHOOK_URL --ticketmaster-config /config/ticketmaster.yaml --diff --diff-file /data/previous-ids
             env:
             - name: "TICKETMASTER_API_KEY"
               value: "{{ .Values.ticketmaster.apiKey }}"

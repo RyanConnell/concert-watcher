@@ -17,7 +17,7 @@ Theres a few things you'll need to set up before running this script.
 You'll need to create a new Ticketmaster API token on [developer.ticketmaster.com](https://developer.ticketmaster.com)
 
 ### 2. Artists file
-A file containing a list of artists (1 per line) that you want to be notified about will need to created and passed to the application via the `--artistFile` flag.
+A file containing a list of artists (1 per line) that you want to be notified about will need to created and passed to the application via the `--artist-file` flag.
 
 An example artist file might look something like the following:
 ```
@@ -58,6 +58,6 @@ docker run --rm -it \
    -e TICKETMASTER_API_KEY=ticketmaster_api_key_goes_here \
    -e DISCORD_WEBHOOK_URL=discord_webhook_url_goes_here \
    ryanconnell/concert-watcher:latest \
-   sh -c '/bin/concert-watcher --apiKey=$TICKETMASTER_API_KEY --artistFile=/config/artists --ticketmasterConfig=/config/ticketmaster.yaml --discordWebhookURL=$DISCORD_WEBHOOK_URL'
+   sh -c '/bin/concert-watcher scan --api-key=$TICKETMASTER_API_KEY --artist-file=/config/artists --ticketmaster-config=/config/ticketmaster.yaml --discord-webhook-url=$DISCORD_WEBHOOK_URL'
 ```
 Don't forget to replace the `ticketmaster_api_key_goes_here` and `discord_webhook_url_goes_here` with the values you generated in the above sections.
