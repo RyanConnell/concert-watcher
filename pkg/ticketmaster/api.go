@@ -1,9 +1,9 @@
 package ticketmaster
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+
+	"github.com/RyanConnell/concert-watcher/pkg/rest"
 )
 
 const (
@@ -52,7 +52,7 @@ func (r *Reader) GetEvents(params map[string]string) ([]*Event, error) {
 		var eventsFromPagination int
 		for {
 			resp := &getEventsResponse{}
-			err := query(url, resp)
+			err := rest.Query(url, resp)
 			if err != nil {
 				return nil, err
 			}
@@ -84,23 +84,4 @@ func (r *Reader) GetEvents(params map[string]string) ([]*Event, error) {
 	}
 
 	return events, nil
-}
-
-func query[T any](url string, target T) error {
-	fmt.Printf("Visiting site: %q\n", url)
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%q returned %q", url, resp.Status)
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&target); err != nil {
-		return err
-	}
-
-	return nil
 }
