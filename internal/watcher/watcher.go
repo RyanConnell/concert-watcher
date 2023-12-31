@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/RyanConnell/concertwatch/pkg/discord"
-	"github.com/RyanConnell/concertwatch/pkg/set"
-	"github.com/RyanConnell/concertwatch/pkg/ticketmaster"
+	"github.com/RyanConnell/concert-watcher/pkg/discord"
+	"github.com/RyanConnell/concert-watcher/pkg/set"
+	"github.com/RyanConnell/concert-watcher/pkg/ticketmaster"
 )
 
 type Watcher struct {

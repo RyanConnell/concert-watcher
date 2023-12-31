@@ -8,8 +8,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/RyanConnell/concertwatch/internal/watcher"
-	"github.com/RyanConnell/concertwatch/pkg/ticketmaster"
+	"github.com/RyanConnell/concert-watcher/internal/watcher"
+	"github.com/RyanConnell/concert-watcher/pkg/ticketmaster"
 )
 
 type flags struct {

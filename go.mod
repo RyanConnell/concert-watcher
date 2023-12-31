@@ -1,4 +1,4 @@
-module github.com/RyanConnell/concertwatch
+module github.com/RyanConnell/concert-watcher
 
 go 1.20
 
