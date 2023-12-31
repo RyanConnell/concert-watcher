@@ -9,12 +9,12 @@ spec:
       template:
         spec:
           containers:
-          - name: concert-watch
+          - name: concert-watcher
             image: {{ .Values.image }}
             command:
             - /bin/sh
             - -c
-            - /bin/concert-watch -apiKey $TICKETMASTER_API_KEY -artistFile /config/artists -discordWebhookURL $DISCORD_WEBHOOK_URL -ticketmasterConfig /config/ticketmaster.yaml
+            - /bin/concert-watcher -apiKey $TICKETMASTER_API_KEY -artistFile /config/artists -discordWebhookURL $DISCORD_WEBHOOK_URL -ticketmasterConfig /config/ticketmaster.yaml
             env:
             - name: "TICKETMASTER_API_KEY"
               value: "{{ .Values.ticketmaster.apiKey }}"

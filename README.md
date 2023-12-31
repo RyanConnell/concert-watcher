@@ -1,8 +1,8 @@
 Concert-Watcher
 ===
-<a href="https://hub.docker.com/repository/docker/ryanconnell/concert-watch/tags?page=1&ordering=last_updated">![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ryanconnell/concert-watch?style=flat&label=Docker)</a>
-![Docker Image Size with architecture (latest by date/latest semver)](https://img.shields.io/docker/image-size/ryanconnell/concert-watch)
-![Docker Pulls](https://img.shields.io/docker/pulls/ryanconnell/concert-watch)
+<a href="https://hub.docker.com/repository/docker/ryanconnell/concert-watcher/tags?page=1&ordering=last_updated">![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ryanconnell/concert-watcher?style=flat&label=Docker)</a>
+![Docker Image Size with architecture (latest by date/latest semver)](https://img.shields.io/docker/image-size/ryanconnell/concert-watcher)
+![Docker Pulls](https://img.shields.io/docker/pulls/ryanconnell/concert-watcher)
 
 Searching through the ticketmaster website manually is an absolute pain. Instead of that this script will query the ticketmaster API for a list of nearby concerts and then compare the artists with a list of artists _you_ want to be notified about.
 
@@ -30,9 +30,9 @@ Bury Tomorrow
 In the future I would like to provide support for scraping Youtube Music and/or Spotify for a list of artists but as of right now this needs to be manually populated. (Some copy/pasting and a few sed commands will likely do the trick here to quickly get this generated)
 
 ### 3. Customise the Ticketmaster Search Criteria
-Ticketmaster covers a _lot_ of events and regions so to help reduce the search space we can make use of a YAML file that provides extra query parameters to our API calls. 
+Ticketmaster covers a _lot_ of events and regions so to help reduce the search space we can make use of a YAML file that provides extra query parameters to our API calls.
 
-An example YAML file can be found in [./helm/files/ticketmaster.yaml](https://github.com/RyanConnell/concert-watch/blob/main/helm/files/ticketmaster.yaml). As an example, the following criteria will filter our results to show concerts taking place anywhere in Ireland:
+An example YAML file can be found in [./helm/files/ticketmaster.yaml](https://github.com/RyanConnell/concert-watcher/blob/main/helm/files/ticketmaster.yaml). As an example, the following criteria will filter our results to show concerts taking place anywhere in Ireland:
 ```yaml
 # Filter results to Ireland.
 countryCode: IE
@@ -55,7 +55,7 @@ docker run --rm -it \
    -v /path/to/config:/config:Z \
    -e TICKETMASTER_API_KEY=ticketmaster_api_key_goes_here \
    -e DISCORD_WEBHOOK_URL=discord_webhook_url_goes_here \
-   ryanconnell/concert-watch:latest \
-   sh -c '/bin/concert-watch --apiKey=$TICKETMASTER_API_KEY --artistFile=/config/artists --ticketmasterConfig=/config/ticketmaster.yaml --discordWebhookURL=$DISCORD_WEBHOOK_URL'
+   ryanconnell/concert-watcher:latest \
+   sh -c '/bin/concert-watcher --apiKey=$TICKETMASTER_API_KEY --artistFile=/config/artists --ticketmasterConfig=/config/ticketmaster.yaml --discordWebhookURL=$DISCORD_WEBHOOK_URL'
 ```
 Don't forget to replace the `ticketmaster_api_key_goes_here` and `discord_webhook_url_goes_here` with the values you generated in the above sections.
