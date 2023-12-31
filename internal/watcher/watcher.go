@@ -13,22 +13,22 @@ import (
 	"github.com/RyanConnell/concert-watcher/pkg/ticketmaster"
 )
 
-const DIFF_FILE = "previous-event-ids"
-
 type Watcher struct {
 	ticketmasterAPI        ticketmaster.API
 	ticketmasterConfigFile string
 	trackedArtists         *set.Set[string]
 	discordWebhookURL      string
+	diffFile               string
 }
 
 func NewWatcher(ticketmasterAPI ticketmaster.API, ticketmasterConfigFile string,
-	trackedArtists []string, discordWebhookURL string) *Watcher {
+	trackedArtists []string, discordWebhookURL string, diffFile string) *Watcher {
 	return &Watcher{
 		ticketmasterAPI:        ticketmasterAPI,
 		ticketmasterConfigFile: ticketmasterConfigFile,
 		trackedArtists:         set.New(trackedArtists...),
 		discordWebhookURL:      discordWebhookURL,
+		diffFile:               diffFile,
 	}
 }
 
@@ -126,7 +126,7 @@ func (w *Watcher) Notify(events []*ticketmaster.Event) error {
 
 // Query for a list of events that we've previously notiied on.
 func (w *Watcher) previousEventIDs() ([]string, error) {
-	file, err := os.Open(DIFF_FILE)
+	file, err := os.Open(w.diffFile)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
 	}
@@ -145,7 +145,7 @@ func (w *Watcher) previousEventIDs() ([]string, error) {
 
 // Save seen event IDs so that we don't send duplicate notifications each time we run.
 func (w *Watcher) saveEventIDs(ids []string) error {
-	file, err := os.Create(DIFF_FILE)
+	file, err := os.Create(w.diffFile)
 	if err != nil {
 		return err
 	}
