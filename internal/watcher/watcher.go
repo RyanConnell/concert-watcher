@@ -32,21 +32,23 @@ func NewWatcher(ticketmasterAPI ticketmaster.API, ticketmasterConfigFile string,
 	}
 }
 
-func (w *Watcher) FindEvents(diffMode bool) ([]*ticketmaster.Event, error) {
+func (w *Watcher) FindEvents(diffMode, includePartialMatch bool) ([]*ticketmaster.Event,
+	[]string, error) {
+
 	searchCriteria, err := NewSearchCriteria(w.ticketmasterConfigFile)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	events, err := w.ticketmasterAPI.GetEvents(searchCriteria)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	seen := set.New[string]()
 	if diffMode {
 		previousIDs, err := w.previousEventIDs()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		seen.Add(previousIDs...)
 	}
@@ -54,6 +56,7 @@ func (w *Watcher) FindEvents(diffMode bool) ([]*ticketmaster.Event, error) {
 	// Filter events based on our artist list.
 	var matchingEvents []*ticketmaster.Event
 	var matchingEventIDs []string
+	var partialEventIDs []string
 	for _, event := range events {
 		if seen.Contains(event.ID) {
 			// Keep track of which events are showing up again so that our 'seen' file will be
@@ -62,23 +65,40 @@ func (w *Watcher) FindEvents(diffMode bool) ([]*ticketmaster.Event, error) {
 			continue
 		}
 		for _, artist := range event.Embedded.Attractions {
+			// Check if we can find an exact match for an artist.
 			if w.trackedArtists.Contains(artist.Name) {
 				matchingEvents = append(matchingEvents, event)
 				matchingEventIDs = append(matchingEventIDs, event.ID)
+				break
+			}
+			if !includePartialMatch {
+				continue
+			}
+
+			var partialMatch bool
+			for _, trackedArtist := range w.trackedArtists.Values() {
+				if strings.Contains(artist.Name, trackedArtist) {
+					matchingEvents = append(matchingEvents, event)
+					partialEventIDs = append(partialEventIDs, event.ID)
+					partialMatch = true
+					break
+				}
+			}
+			if partialMatch {
 				break
 			}
 		}
 	}
 
 	if diffMode {
-		if err := w.saveEventIDs(matchingEventIDs); err != nil {
-			return nil, err
+		if err := w.saveEventIDs(append(matchingEventIDs, partialEventIDs...)); err != nil {
+			return nil, nil, err
 		}
 	}
-	return matchingEvents, nil
+	return matchingEvents, partialEventIDs, nil
 }
 
-func (w *Watcher) Notify(events []*ticketmaster.Event) error {
+func (w *Watcher) Notify(events []*ticketmaster.Event, partialEventIDs *set.Set[string]) error {
 	if w.discordWebhookURL == "" {
 		fmt.Println("No discord webhook URL was provided; Skipping POST to discord")
 		return nil
@@ -100,6 +120,10 @@ func (w *Watcher) Notify(events []*ticketmaster.Event) error {
 			Footer: discord.WebhookEmbedFooter{
 				Text: fmt.Sprintf("%s @ %s", event.Date(), event.Embedded.Venues[0]),
 			},
+		}
+		if partialEventIDs.Contains(event.ID) {
+			embed.Color = 12535447
+			embed.Title = "__Partial Match__"
 		}
 
 		// Add information about band and supporting acts.
