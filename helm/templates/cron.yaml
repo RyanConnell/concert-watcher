@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: concert-watcher
-            image: {{ .Values.image }}
+            image: {{ .Values.image.name }}:{{ .Values.image.tag }}
             command:
             - /bin/sh
             - -c

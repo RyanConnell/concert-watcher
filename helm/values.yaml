@@ -1,7 +1,9 @@
 name: concert-watcher
-image: ryanconnell/concert-watcher:latest
+cronSchedule: "0 13 * * *"
 
-cronSchedule: "@weekly"
+image:
+  name: ryanconnell/concert-watcher
+  tag: latest
 
 discord:
   # Add a webhook URL to enable discord notifications.
