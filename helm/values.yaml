@@ -7,10 +7,22 @@ image:
 
 discord:
   # Add a webhook URL to enable discord notifications.
-  webhookURL: ""
+  webhookURL:
+    # If 'secret' is provided we will use that to populate DISCORD_WEBHOOK_URL.
+    secret:
+      name: concert-watcher
+      key: discord-webhook-url
+    # If 'secret' is not provided we can use 'value' instead.
+    value: "{DISCORD_API_KEY_GOES_HERE}"
 
 ticketmaster:
-  apiKey: "{TICKETMASTER_API_KEY_GOES_HERE}"
+  apiKey:
+    # If 'secret' is provided we will use that to populate TICKETMASTER_API_KEY.
+    secret:
+      name: concert-watcher
+      key: ticketmaster-api-key
+    # If 'secret' is not provided we can use 'value' instead.
+    value: "{TICKETMASTER_API_KEY_GOES_HERE}"
 
 storage:
   className: nfs-client
