@@ -5,6 +5,10 @@ image:
   name: ryanconnell/concert-watcher
   tag: latest
 
+artists:
+  # Name of the configMap containing all of our artists.
+  configMap: concert-watcher-artists
+
 discord:
   # Add a webhook URL to enable discord notifications.
   webhookURL:

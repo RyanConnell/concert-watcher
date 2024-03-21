@@ -14,7 +14,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - /bin/concert-watcher scan --api-key $TICKETMASTER_API_KEY --artist-file /config/artists --discord-webhook-url $DISCORD_WEBHOOK_URL --ticketmaster-config /config/ticketmaster.yaml --diff --diff-file /data/previous-ids --include-partial-match
+            - /bin/concert-watcher scan --api-key $TICKETMASTER_API_KEY --artist-file /artists --discord-webhook-url $DISCORD_WEBHOOK_URL --ticketmaster-config /config/ticketmaster.yaml --diff --diff-file /data/previous-ids --include-partial-match
             env:
             - name: "TICKETMASTER_API_KEY"
               {{- if .Values.ticketmaster.apiKey.secret }}
@@ -35,6 +35,9 @@ spec:
               value: "{{ .Values.discord.webhookURL.value }}"
               {{- end }}
             volumeMounts:
+            - name: artists
+              mountPath: /artists
+              subPath: artists
             - name: config-map
               mountPath: /config
             - name: data
@@ -43,6 +46,9 @@ spec:
           - name: config-map
             configMap:
               name: {{ .Values.name }}-config
+          - name: artists
+            configMap:
+              name: {{ .Values.artists.configMap }}
           - name: data
             persistentVolumeClaim:
               claimName: {{ .Values.name }}-pvc
