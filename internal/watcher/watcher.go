@@ -123,7 +123,8 @@ func (w *Watcher) Notify(events []*ticketmaster.Event, partialEventIDs *set.Set[
 		}
 		if partialEventIDs.Contains(event.ID) {
 			embed.Color = 12535447
-			embed.Title = "__Partial Match__"
+			embed.Title = fmt.Sprintf("__Partial Match__ (on %q)",
+				event.Embedded.Attractions[0].Name)
 		}
 
 		// Add information about band and supporting acts.
