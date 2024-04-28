@@ -118,7 +118,7 @@ func (w *Watcher) Notify(events []*ticketmaster.Event, partialEventIDs *set.Set[
 		embed := &discord.WebhookEmbed{
 			Color: 24576,
 			Footer: discord.WebhookEmbedFooter{
-				Text: fmt.Sprintf("%s @ %s", event.Date(), event.Embedded.Venues[0]),
+				Text: fmt.Sprintf("%s @ %s\n#%s", event.Date(), event.Embedded.Venues[0], event.ID),
 			},
 		}
 		if partialEventIDs.Contains(event.ID) {
