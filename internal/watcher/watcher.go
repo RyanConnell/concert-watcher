@@ -51,6 +51,11 @@ func (w *Watcher) FindEvents(diffMode, includePartialMatch bool) ([]*ticketmaste
 			return nil, nil, err
 		}
 		seen.Add(previousIDs...)
+
+		fmt.Println("The following IDs will be ignored while running in 'diff' mode:")
+		for _, id := range previousIDs {
+			fmt.Printf("- %s\n", id)
+		}
 	}
 
 	// Filter events based on our artist list.
