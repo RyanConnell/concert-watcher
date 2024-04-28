@@ -117,6 +117,7 @@ func (w *Watcher) Notify(events []*ticketmaster.Event, partialEventIDs *set.Set[
 		Content:  "Take a look at your weekly dump of upcoming concerts!",
 	}
 
+	var embeds []*discord.WebhookEmbed
 	for _, event := range events {
 		fieldName := fmt.Sprintf("%s", event.Embedded.Attractions[0].Name)
 
@@ -148,11 +149,26 @@ func (w *Watcher) Notify(events []*ticketmaster.Event, partialEventIDs *set.Set[
 			embed.Thumbnail = discord.URL{URL: event.Images[0].URL}
 		}
 
-		webhookBody.Embeds = append(webhookBody.Embeds, embed)
+		embeds = append(embeds, embed)
 	}
 
-	webhook := &discord.Webhook{URL: w.discordWebhookURL, Body: webhookBody}
-	return webhook.Send()
+	// Discord only allows 10 embeds per message, so if we need to exceed that we have to
+	// send multiple messages.
+	for i := 0; i < len(embeds); i += 10 {
+		var msgEmbeds []*discord.WebhookEmbed
+		if i+10 > len(embeds) {
+			msgEmbeds = embeds[i:]
+		} else {
+			msgEmbeds = embeds[i:(i + 10)]
+		}
+
+		webhookBody = discord.WebhookBody{Username: "Concert Watcher", Embeds: msgEmbeds}
+		webhook := &discord.Webhook{URL: w.discordWebhookURL, Body: webhookBody}
+		if err := webhook.Send(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Query for a list of events that we've previously notiied on.
